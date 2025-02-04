@@ -11,7 +11,7 @@
 #define ANGL_FILE DIRECTORY "/angl.dat"
 
 #define DOUBLE_SIZE sizeof(double)
-#define VALUES_PER_PACKET 9 // Each packet has 9 double values
+#define VALUES_PER_PACKET 9 
 
 // Function to check errors when opening files
 int checkError(int val, const char *msg) {
@@ -24,7 +24,9 @@ int checkError(int val, const char *msg) {
 
 int main() {
 
+    // Input data file
     const char *input_file = "data.dat";
+
     // Create output directory
     if (mkdir(DIRECTORY, 0777) == -1 && errno != EEXIST) {
         perror("Error creating directory");
@@ -37,12 +39,13 @@ int main() {
     int rota_fd = checkError(open(ROTA_FILE, O_WRONLY | O_CREAT | O_TRUNC, 0644), "Open rota.dat");
     int angl_fd = checkError(open(ANGL_FILE, O_WRONLY | O_CREAT | O_TRUNC, 0644), "Open angl.dat");
 
-    double buffer[VALUES_PER_PACKET]; // Buffer to store a full packet (9 doubles)
-    ssize_t bytesRead;
+    // Buffer to store 3 double values
+    double buffer[VALUES_PER_PACKET];
+    long bytesRead;
 
     // Read from input data file
     while ((bytesRead = read(input_fd, buffer, sizeof(buffer))) == sizeof(buffer)) {
-        // Write data to 3 separate files
+        // Write double data to 3 separate files
         write(accl_fd, buffer, DOUBLE_SIZE * 3);
         write(angl_fd, &buffer[6], DOUBLE_SIZE * 3);
         write(rota_fd, &buffer[3], DOUBLE_SIZE * 3);
@@ -54,6 +57,6 @@ int main() {
     close(rota_fd);
     close(angl_fd);
 
-    printf("Success!!\n");
+    printf("Success!! Data was written to the 3 separate files in the values directoy\n");
     return EXIT_SUCCESS;
 }
